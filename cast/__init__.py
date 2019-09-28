@@ -8,7 +8,7 @@ def podcast_same_audio_case(audio_model, file_name, context):
     """
     podcast special case:
 
-    Upload all audio fiels with the same name into same
+    Upload all audio fields with the same name into same
     model instance, because podcast audio consists of
     different files with the same content.
     """
