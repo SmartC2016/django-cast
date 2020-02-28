@@ -77,6 +77,7 @@ class PostsListView(RenderPostMixin, GetParamsMixin, FilterView):
             facet_counts = {"year_month": {selected_facet: 1}}
         kwargs["facet_counts"] = facet_counts
         post_filter = filterset_class(**kwargs)
+
         facet_queryset = (
             post_filter.qs.order_by()
             .annotate(month=TruncMonth("visible_date"))

@@ -18,6 +18,13 @@ from django.contrib.auth import get_user_model
 from django.core.files import File as DjangoFile
 from django.utils.translation import ugettext_lazy as _
 
+from wagtail.core.models import Page
+from wagtail.core import blocks
+from wagtail.core.fields import StreamField
+from wagtail.core.fields import RichTextField
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.images.blocks import ImageChooserBlock
+
 from ckeditor_uploader.fields import RichTextUploadingField
 
 from imagekit.models import ImageSpecField
@@ -34,6 +41,34 @@ from . import appsettings
 logger = logging.getLogger(__name__)
 
 
+class BlogIndexPage(Page):
+    intro = RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel('intro', classname="full")
+    ]
+
+
+class BlogPage(Page):
+    author = models.CharField(max_length=255)
+    date = models.DateField("Post date")
+    body = StreamField(
+        [
+            ("heading", blocks.CharBlock(classname="full title")),
+            ("paragraph", blocks.RichTextBlock()),
+            ("image", ImageChooserBlock(template='cast/blocks/image.html')),
+        ]
+    )
+
+    content_panels = Page.content_panels + [
+        FieldPanel("author"),
+        FieldPanel("date"),
+        StreamFieldPanel("body"),
+    ]
+
+#    parent_page_types = []
+
+
 def image_spec_thumbnail(size):
     processors = [Transpose(), Thumbnail(size, size, crop=False)]
     return ImageSpecField(
@@ -42,7 +77,9 @@ def image_spec_thumbnail(size):
 
 
 class Image(TimeStampedModel):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="cast_images"
+    )
 
     original = models.ImageField(
         upload_to="cast_images/originals",
