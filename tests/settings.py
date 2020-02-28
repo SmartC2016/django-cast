@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "fluent_comments",  # must be before django_comments
     "threadedcomments",
     "django_comments",
+    "wagtail",
     "cast",
 ]
 
